@@ -1,3 +1,15 @@
-prettier --check .
-eslint .
-svelte-kit sync && svelte-check --tsconfig ./tsconfig.json
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "Running pre-commit hooks..."
+
+echo "Checking formatting..."
+pnpm prettier --check . || { echo "Prettier found issues. Please run 'pnpm format' to fix."; exit 1; }
+
+echo "Checking linting..."
+pnpm eslint . || { echo "ESLint found issues. Please fix them."; exit 1; }
+
+echo "Checking Svelte types..."
+pnpm svelte-kit sync && pnpm svelte-check --tsconfig ./tsconfig.json || { echo "Svelte check found issues. Please fix them."; exit 1; }
+
+echo "Pre-commit hooks passed."
